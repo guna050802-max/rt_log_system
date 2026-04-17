@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>RT Critical Care Log — Login</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* simple center for login */
+    .center-wrap { display:flex; height:100vh; align-items:center; justify-content:center; width:100%; }
+    .login-box { background:#fff; padding:28px; border-radius:10px; width:360px; box-shadow:0 8px 30px rgba(8,20,40,0.06); text-align:center; }
+    .login-box input { width:100%; padding:10px; margin:8px 0; border:1px solid #ddd; border-radius:6px; }
+    .login-box button { width:100%; padding:11px; border:none; background:#0055a4; color:#fff; border-radius:6px; cursor:pointer; font-size:15px; }
+    .brand { margin-bottom:10px; }
+  </style>
+</head>
+<body>
+  <div class="center-wrap">
+    <div class="login-box">
+      <img class="brand" src="assets/nh-logo.png" alt="NH logo" width="110">
+      <h2>RT Critical Care Log</h2>
+      <input id="username" placeholder="Username" autocomplete="username">
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+      <button onclick="login()">Login</button>
+      <p class="small" style="margin-top:12px">Made by Gunalan. M. M</p>
+    </div>
+  </div>
+
+<script>
+/*
+ Default admin credentials saved in localStorage (if none exist, we'll create defaults)
+ You can change them later from Admin page.
+*/
+if (!localStorage.getItem('adminUser')) {
+  localStorage.setItem('adminUser','rtadmin');
+  localStorage.setItem('adminPass','rt12345');
+}
+
+function login(){
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
+  const adminUser = localStorage.getItem('adminUser');
+  const adminPass = localStorage.getItem('adminPass');
+
+  if (u === adminUser && p === adminPass) {
+    localStorage.setItem('loggedIn','1');
+    // go to home
+    location.href = 'home.html';
+  } else {
+    alert('Invalid username or password');
+  }
+}
+</script>
+</body>
+</html>
