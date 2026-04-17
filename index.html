@@ -101,15 +101,9 @@ function goToViewDashboard() {
 }
 
 // ADMIN LOGIN
-function adminAccess() {
-    let u = prompt("Enter Username:");
-    let p = prompt("Enter Password:");
-
-    if (u === "rtadmin" && p === "rt12345") {
-        window.location.href = "admin.html";
-    } else {
-        alert("Wrong credentials");
-    }
+ function adminAccess() {
+  window.location.href = "adminaccess.html";
+}
 }
 
 </script>
