@@ -1,0 +1,90 @@
+/* Global layout */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: #f4f7fb;
+  color: #222;
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  background: #fff;
+  border-right: 1px solid #e3e6ea;
+  height: 100vh;
+  padding: 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow: auto;
+}
+.sidebar img.logo {
+  width: 120px;
+  display: block;
+  margin: 0 auto 10px;
+}
+.sidebar h2 {
+  margin: 6px 0 14px;
+  font-size: 16px;
+  color: #0055a4;
+  text-align: center;
+}
+.sidebar a {
+  display: block;
+  padding: 10px 12px;
+  margin: 8px 0;
+  color: #0055a4;
+  text-decoration: none;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  text-align: left;
+}
+.sidebar a:hover { background: #0055a4; color:#fff; border-color: #0055a4; }
+
+.content {
+  margin-left: 260px;
+  padding: 28px;
+  width: calc(100% - 260px);
+  min-height: 100vh;
+}
+
+/* Header & toolbar */
+.header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+.header h1 { margin:0; font-size:22px; color:#0b2f5a; }
+
+/* Cards */
+.card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(10,20,40,0.04);
+  margin-bottom: 16px;
+}
+.kpi-row { display:flex; gap:16px; margin-bottom:16px; flex-wrap:wrap; }
+.kpi { flex:1 1 200px; padding:12px; text-align:center; border-radius:8px; background:#fff; border:1px solid #eef2f7; }
+.kpi h3 { margin:6px 0; font-size:18px; color:#0055a4; }
+.kpi p { margin:0; font-size:14px; color:#333; }
+
+/* Table */
+.table { width:100%; border-collapse: collapse; }
+.table th, .table td { text-align:left; padding:8px 10px; border-bottom:1px solid #eef2f7; }
+.table th { background:#fafbfd; color:#0055a4; }
+
+/* Small helpers */
+.btn { display:inline-block; padding:8px 12px; border-radius:6px; background:#0055a4; color:#fff; text-decoration:none; }
+.small { font-size:13px; color:#666; }
+
+/* responsive */
+@media (max-width:800px) {
+  .sidebar { width:60px; }
+  .content { margin-left:60px; padding:14px; }
+  .sidebar a { font-size:11px; padding:8px; }
+  .sidebar h2 { display:none; }
+}

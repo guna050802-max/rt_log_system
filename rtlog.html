@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RT Daily Log</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabase = createClient(
+  "https://hzpysoebdqtmtrstodcq.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6cHlzb2ViZHF0bXRyc3RvZGNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4NDU0NDQsImV4cCI6MjA3OTQyMTQ0NH0.DG7UfBGC7Af12C09W31ayKDf6y-FB3ADOOqKrAjEAJw"
+   
+);
+
+async function submitRTLog() {
+
+  const entry = {
+    date: document.getElementById("date").value,
+    unit: document.getElementById("unit").value,
+    shift: document.getElementById("shift").value,
+    rt_name: document.getElementById("rt_name").value,
+
+    intubation: Number(document.getElementById("intubation").value || 0),
+    extubation: Number(document.getElementById("extubation").value || 0),
+    reintubation: Number(document.getElementById("reintubation").value || 0),
+
+    ventilated_transports: Number(document.getElementById("transport_ventilated").value),
+    bronchoscopies_assisted: Number(document.getElementById("bronchoscopy_assisted").value),
+    tracheostomy_assisted: Number(document.getElementById("tracheostomy_assisted").value),
+
+    et_tube_change: Number(document.getElementById("et_tube_change").value),
+    et_tube_change_reason: document.getElementById("et_tube_change_reason").value,
+
+    tt_tube_change: Number(document.getElementById("tt_tube_change").value),
+    tt_tube_change_reason: document.getElementById("tt_tube_change_reason").value,
+
+    code_participation: Number(document.getElementById("code_participation").value),
+
+    ventilator_initiation: Number(document.getElementById("ventilator_initiation").value),
+    hfnc_initiation: Number(document.getElementById("hfnc_initiation").value),
+    niv_initiation: Number(document.getElementById("niv_initiation").value),
+
+    bronchial_hygiene: Number(document.getElementById("bronchial_hygiene").value),
+    dta_culture: Number(document.getElementById("dta_culture").value),
+
+    prone: Number(document.getElementById("prone").value),
+    supine: Number(document.getElementById("supine").value),
+
+    total_intubated: Number(document.getElementById("total_intubated").value),
+    total_trach_cases: Number(document.getElementById("total_trach_cases").value),
+    total_ecmo_cases: Number(document.getElementById("total_ecmo_cases").value),
+
+    notes: document.getElementById("notes").value,
+
+    created_at: new Date().toISOString() // 🔥 IMPORTANT
+  };
+ const { error } = await supabase.from("rt_logs").insert([entry]);
+
+if (error) {
+  alert("Error: " + error.message);
+} else {
+  alert("Log Saved Successfully!");
+ 
+const msg =
+"RT LOG\n\n" +
+
+"RT: " + entry.rt_name + "\n" +
+"Unit: " + entry.unit + "\n" +
+"Shift: " + entry.shift + "\n\n" +
+
+"--- PROCEDURES ---\n" +
+"Intubation: " + entry.intubation + "\n" +
+"Extubation: " + entry.extubation + "\n" +
+"Reintubation: " + entry.reintubation + "\n" +
+"Ventilated Transport: " + entry.ventilated_transports + "\n" +
+"Bronchoscopy Assisted: " + entry.bronchoscopies_assisted + "\n" +
+"Tracheostomy Assisted: " + entry.tracheostomy_assisted + "\n\n" +
+
+"--- TUBE MANAGEMENT ---\n" +
+"ET Tube Change: " + entry.et_tube_change + "\n" +
+"ET Tube Reason: " + entry.et_tube_change_reason + "\n" +
+"TT Tube Change: " + entry.tt_tube_change + "\n" +
+"TT Tube Reason: " + entry.tt_tube_change_reason + "\n\n" +
+
+"--- SUPPORT ---\n" +
+"Code Participation: " + entry.code_participation + "\n" +
+"Ventilator Initiation: " + entry.ventilator_initiation + "\n" +
+"HFNC Initiation: " + entry.hfnc_initiation + "\n" +
+"NIV Initiation: " + entry.niv_initiation + "\n\n" +
+
+"--- CARE ---\n" +
+"Bronchial Hygiene: " + entry.bronchial_hygiene + "\n" +
+"DTA Culture: " + entry.dta_culture + "\n" +
+"Prone: " + entry.prone + "\n" +
+"Supine: " + entry.supine + "\n\n" +
+
+"--- TOTAL ---\n" +
+"Total Intubated: " + entry.total_intubated + "\n" +
+"Total Trach Cases: " + entry.total_trach_cases + "\n" +
+"Total ECMO Cases: " + entry.total_ecmo_cases + "\n\n" +
+
+"Notes: " + entry.notes;
+
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg));
+
+  window.location.href = "dashboard.html";
+}
+}
+
+window.submitRTLog = submitRTLog;
+</script>
+
+<style>
+.form {
+  max-width: 700px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+input, select, textarea {
+  width: 100%;
+  margin: 6px 0;
+  padding: 10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="form">
+
+<h2>RT Daily Log</h2>
+
+<input type="date" id="date">
+
+<select id="unit">
+<option>MICU</option>
+<option>CCU</option>
+<option>1st AITU</option>
+<option>2nd AITU</option>
+<option>4th AITU</option>
+</select>
+
+<select id="shift">
+<option>Day</option>
+<option>Night</option>
+</select>
+
+<input id="rt_name" placeholder="RT Name">
+
+<h3>Procedures</h3>
+
+<input type="number" id="intubation" placeholder="Intubation">
+<input type="number" id="extubation" placeholder="Extubation">
+<input type="number" id="reintubation" placeholder="Reintubation">
+
+<input type="number" id="transport_ventilated" placeholder="Ventilated Transport">
+
+<input type="number" id="bronchoscopy_assisted" placeholder="Bronchoscopy Assisted">
+<input type="number" id="tracheostomy_assisted" placeholder="Tracheostomy Assisted">
+
+<input type="number" id="et_tube_change" placeholder="ET Tube Change">
+<input id="et_tube_change_reason" placeholder="ET Tube Reason">
+
+<input type="number" id="tt_tube_change" placeholder="TT Tube Change">
+<input id="tt_tube_change_reason" placeholder="TT Tube Reason">
+
+<input type="number" id="code_participation" placeholder="Code Participation">
+
+<input type="number" id="ventilator_initiation" placeholder="Ventilator Initiation">
+<input type="number" id="hfnc_initiation" placeholder="HFNC Initiation">
+<input type="number" id="niv_initiation" placeholder="NIV Initiation">
+
+<input type="number" id="bronchial_hygiene" placeholder="Bronchial Hygiene">
+<input type="number" id="dta_culture" placeholder="DTA Culture">
+
+<input type="number" id="prone" placeholder="Prone">
+<input type="number" id="supine" placeholder="Supine">
+
+<input type="number" id="total_intubated" placeholder="Total Intubated">
+<input type="number" id="total_trach_cases" placeholder="Total Trach Cases">
+<input type="number" id="total_ecmo_cases" placeholder="Total ECMO Cases">
+
+<textarea id="notes" placeholder="Notes"></textarea>
+
+<button onclick="submitRTLog()">Submit Log</button>
+
+</div>
+
+</body>
+</html>

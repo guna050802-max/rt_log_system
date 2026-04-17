@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Dashboard - RT Critical Care Log</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="style.css">
+  <!-- Supabase JS (ESM) -->
+  <script type="module">
+    // Protect page
+    if (!localStorage.getItem('loggedIn')) location.href = 'index.html';
+
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    // ---- REPLACE with your supabase project details if different ----
+    const SUPABASE_URL = "https://hzpysoebdqtmtrstodcq.supabase.co";
+    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6cHlzb2ViZHF0bXRyc3RvZGNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4NDU0NDQsImV4cCI6MjA3OTQyMTQ0NH0.DG7UfBGC7Af12C09W31ayKDf6y-FB3ADOOqKrAjEAJw";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    async function loadLogs() {
+      // fetch all logs (limit for preview)
+      const { data, error } = await supabase
+        .from('rt_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(500);
+      if (error) {
+        document.getElementById('status').innerText = "Error loading logs: " + error.message;
+        return;
+      }
+
+      // display total count
+      const total = data.length;
+      document.getElementById('totalCount').innerText = total;
+
+      // today's logs
+      const today = new Date().toISOString().slice(0,10);
+      const todayCount = data.filter(r => r.created_at && r.created_at.slice(0,10) === today).length;
+      document.getElementById('todayCount').innerText = todayCount;
+
+      // ventilator stats (example: sum intubations + ventilated_transports etc)
+      let intubSum = 0;
+      let bronchSum = 0;
+      data.forEach(r => {
+        intubSum += Number(r.intubation || 0);
+        bronchSum += Number(r.bronchoscopies_assisted || 0);
+      });
+      document.getElementById('intubSum').innerText = intubSum;
+      document.getElementById('bronchSum').innerText = bronchSum;
+
+      // populate table
+      const tbody = document.getElementById('logsTableBody');
+      tbody.innerHTML = '';
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${new Date(row.created_at).toLocaleString()}</td>
+          <td>${row.rt_name || ''}</td>
+          <td>${row.unit || ''}</td>
+          <td>${row.shift || ''}</td>
+          <td>${row.intubation || 0}</td>
+          <td>${row.extubation || 0}</td>
+          <td>${(row.notes||'').substring(0,80)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // allow admin to refresh
+    window.supabaseLoad = loadLogs;
+
+    // auto load when page ready
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('status').innerText = 'Loading logs...';
+      loadLogs().then(()=> {
+        document.getElementById('status').innerText = '';
+      });
+    });
+
+    // admin-only action to clear logs (calls supabase delete)
+    async function clearAllLogs() {
+      if (!confirm('Delete every log permanently?')) return;
+      // delete all rows - WARNING
+      const { error } = await supabase
+        .from('rt_logs')
+        .delete()
+        .neq('id', ''); // delete all
+      if (error) alert('Delete failed: ' + error.message);
+      else {
+        alert('All logs deleted');
+        window.supabaseLoad();
+      }
+    }
+    window.clearAllLogs = clearAllLogs;
+
+  </script>
+</head>
+<body>
+  <div class="sidebar">
+    <img class="logo" src="assets/nh-logo.png" alt="NH logo">
+    <h2>Welcome NH Respiratory Therapist</h2>
+    <a href="home.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="admin.html">Admin</a>
+    <a href="#" onclick="localStorage.removeItem('loggedIn'); location.href='index.html'">Logout</a>
+  </div>
+
+  <div class="content">
+    <div class="header">
+      <h1>Dashboard</h1>
+      <div id="status" class="small"></div>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi card">
+        <h3>Total Logs</h3>
+        <p id="totalCount">0</p>
+      </div>
+      <div class="kpi card">
+        <h3>Today's Logs</h3>
+        <p id="todayCount">0</p>
+      </div>
+      <div class="kpi card">
+        <h3>Total Intubations</h3>
+        <p id="intubSum">0</p>
+      </div>
+      <div class="kpi card">
+        <h3>Total Bronchoscopies</h3>
+        <p id="bronchSum">0</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3>Recent Logs</h3>
+        <div>
+          <a class="btn" href="#" onclick="supabaseLoad()">Refresh</a>
+        </div>
+      </div>
+
+      <table class="table" style="margin-top:12px">
+        <thead>
+          <tr>
+            <th>Date</th><th>RT</th><th>Unit</th><th>Shift</th><th>Intub</th><th>Extub</th><th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="logsTableBody">
+          <!-- filled dynamically -->
+        </tbody>
+      </table>
+
+      <div style="margin-top:12px">
+        <small class="small">Only viewing latest records from Supabase.</small>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Admin Actions</h3>
+      <p><a class="btn" href="#" onclick="clearAllLogs()">Clear All Logs (SUPABASE)</a></p>
+      <p class="small">Warning: Clear All Logs permanently deletes data.</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Home - RT Critical Care Log</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    // Protect page
+    if (!localStorage.getItem('loggedIn')) {
+      location.href = 'index.html';
+    }
+    function logout(){ localStorage.removeItem('loggedIn'); location.href='index.html'; }
+  </script>
+</head>
+<body>
+  <div class="sidebar">
+    <img class="logo" src="assets/nh-logo.png" alt="NH logo">
+    <h2>Welcome NH Respiratory Therapist</h2>
+    <a href="home.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="admin.html">Admin</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+
+  <div class="content">
+    <div class="header">
+      <h1>Home</h1>
+      <div class="small">Logged in as <strong style="color:#0055a4;">{admin}</strong></div>
+    </div>
+
+    <div class="card">
+      <h3>Welcome to the RT Critical Care Log System</h3>
+      <p>This is the central place for RT logs and analytics. Use the left menu to access Dashboard and Admin tools.</p>
+      <p class="small">If you want to enable online log saving, go to Dashboard → that reads from Supabase.</p>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi card">
+        <h3>Quick Action</h3>
+        <p><a class="btn" href="dashboard.html">Open Dashboard</a></p>
+      </div>
+      <div class="kpi card">
+        <h3>Admin Tools</h3>
+        <p><a class="btn" href="admin.html">Open Admin</a></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

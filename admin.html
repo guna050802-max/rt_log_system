@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Admin - RT Critical Care Log</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    if (!localStorage.getItem('loggedIn')) location.href='index.html';
+
+    function saveCreds() {
+      const u = document.getElementById('newUser').value.trim();
+      const p = document.getElementById('newPass').value.trim();
+      if (!u || !p) { alert('Provide username and password'); return; }
+      localStorage.setItem('adminUser', u);
+      localStorage.setItem('adminPass', p);
+      alert('Admin credentials updated. Use new login next time.');
+    }
+
+    function showCurrent() {
+      document.getElementById('curUser').innerText = localStorage.getItem('adminUser') || 'rtadmin';
+    }
+
+    function clearLocalLogs(){
+      if (!confirm('Clear logs stored in localStorage?')) return;
+      localStorage.removeItem('rt_local_logs');
+      alert('Local logs cleared.');
+    }
+
+    window.addEventListener('DOMContentLoaded', showCurrent);
+  </script>
+</head>
+<body>
+  <div class="sidebar">
+    <img class="logo" src="assets/nh-logo.png" alt="NH logo">
+    <h2>Welcome NH Respiratory Therapist</h2>
+    <a href="home.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="admin.html">Admin</a>
+    <a href="#" onclick="localStorage.removeItem('loggedIn'); location.href='index.html'">Logout</a>
+  </div>
+
+  <div class="content">
+    <div class="header">
+      <h1>Admin Panel</h1>
+      <div class="small">Only admin can access this page</div>
+    </div>
+
+    <div class="card">
+      <h3>Current Admin Username</h3>
+      <p id="curUser" style="font-weight:600"></p>
+      <p class="small">Change the admin username/password below.</p>
+
+      <div style="margin-top:12px;">
+        <input id="newUser" placeholder="New username" style="padding:8px; width:320px; margin-bottom:8px;">
+        <br>
+        <input id="newPass" placeholder="New password" style="padding:8px; width:320px; margin-bottom:8px;">
+        <br>
+        <button onclick="saveCreds()" class="btn">Save New Credentials</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Local logs</h3>
+      <p class="small">If you used LocalStorage for logs, you can clear them here.</p>
+      <button onclick="clearLocalLogs()" class="btn">Clear Local Logs</button>
+    </div>
+
+    <div class="card">
+      <h3>Other Tools</h3>
+      <p class="small">For Supabase-level data deletion and export use Supabase console or Dashboard page.</p>
+      <p><a class="btn" href="dashboard.html">Open Dashboard</a></p>
+    </div>
+  </div>
+</body>
+</html>

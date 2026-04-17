@@ -1,0 +1,192 @@
+<!DOCTYPE html><html>
+<head>
+<title>RT Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"><style>
+body { font-family: Arial; margin:0; background:#eef5ff; }
+header { background:#007bff; color:white; padding:15px; text-align:center; font-size:20px; }
+
+.filters { background:white; padding:10px; display:flex; gap:10px; flex-wrap:wrap; }
+input, select, textarea { padding:8px; border-radius:5px; border:1px solid #ccc; width:100%; }
+
+.container { padding:10px; }
+
+.card {
+  background:white;
+  padding:15px;
+  margin-bottom:10px;
+  border-radius:10px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+button {
+  background:#007bff;
+  color:white;
+  border:none;
+  padding:8px;
+  border-radius:5px;
+  margin-top:5px;
+}
+
+button:disabled { background:gray; }
+</style></head><body><header>RT Full Dashboard</header><div class="filters">
+  <input id="search" placeholder="Search RT name">
+  <input type="date" id="dateFilter">
+  <select id="unitFilter">
+    <option value="">All Units</option>
+    <option>MICU</option>
+    <option>CCU</option>
+    <option>1st AITU</option>
+    <option>2nd AITU</option>
+    <option>4th AITU</option>
+  </select>
+  <button onclick="applyFilter()">Apply</button>
+</div><div class="container" id="dataContainer"></div><script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabase = createClient(
+  "https://hzpysoebdqtmtrstodcq.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6cHlzb2ViZHF0bXRyc3RvZGNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4NDU0NDQsImV4cCI6MjA3OTQyMTQ0NH0.DG7UfBGC7Af12C09W31ayKDf6y-FB3ADOOqKrAjEAJw"
+);
+
+let allData = [];
+
+async function loadData() {
+  const { data, error } = await supabase
+    .from("rt_logs")
+    .select("*")
+    .order("created_at", { ascending:false });
+
+  if (error) return alert(error.message);
+
+  allData = data;
+  render(data);
+}
+
+function render(data) {
+  const c = document.getElementById("dataContainer");
+  c.innerHTML = "";
+
+  data.forEach(log => {
+
+    const diff = (new Date() - new Date(log.created_at)) / (1000*60*60);
+    const canEdit = diff <= 12;
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+<b>${log.date} | ${log.rt_name}</b><br>
+
+RT Name:<input id="rt_${log.id}" value="${log.rt_name}">
+Unit:<input id="unit_${log.id}" value="${log.unit}">
+Shift:<input id="shift_${log.id}" value="${log.shift}">
+
+<h4>Procedures</h4>
+<input type="number" id="int_${log.id}" value="${log.intubation}">
+<input type="number" id="ext_${log.id}" value="${log.extubation}">
+<input type="number" id="reint_${log.id}" value="${log.reintubation}">
+<input type="number" id="trans_${log.id}" value="${log.ventilated_transports}">
+<input type="number" id="bron_${log.id}" value="${log.bronchoscopies_assisted}">
+<input type="number" id="trach_${log.id}" value="${log.tracheostomy_assisted}">
+
+<h4>Tube</h4>
+<input type="number" id="et_${log.id}" value="${log.et_tube_change}">
+<input id="et_reason_${log.id}" value="${log.et_tube_change_reason}">
+<input type="number" id="tt_${log.id}" value="${log.tt_tube_change}">
+<input id="tt_reason_${log.id}" value="${log.tt_tube_change_reason}">
+
+<h4>Support</h4>
+<input type="number" id="code_${log.id}" value="${log.code_participation}">
+<input type="number" id="vent_${log.id}" value="${log.ventilator_initiation}">
+<input type="number" id="hfnc_${log.id}" value="${log.hfnc_initiation}">
+<input type="number" id="niv_${log.id}" value="${log.niv_initiation}">
+
+<h4>Care</h4>
+<input type="number" id="bronch_${log.id}" value="${log.bronchial_hygiene}">
+<input type="number" id="dta_${log.id}" value="${log.dta_culture}">
+<input type="number" id="prone_${log.id}" value="${log.prone}">
+<input type="number" id="supine_${log.id}" value="${log.supine}">
+
+<h4>Total</h4>
+<input type="number" id="t_int_${log.id}" value="${log.total_intubated}">
+<input type="number" id="t_trach_${log.id}" value="${log.total_trach_cases}">
+<input type="number" id="t_ecmo_${log.id}" value="${log.total_ecmo_cases}">
+
+<textarea id="notes_${log.id}">${log.notes || ""}</textarea><button ${!canEdit ? "disabled" : ""} onclick="update('${log.id}')">
+${canEdit ? "Update" : "Locked"}
+</button>
+`;
+
+c.appendChild(card);
+
+});
+}
+
+window.applyFilter = function() {
+let f = allData;
+
+const s = document.getElementById("search").value.toLowerCase();
+const d = document.getElementById("dateFilter").value;
+const u = document.getElementById("unitFilter").value;
+
+if (s) f = f.filter(x => x.rt_name?.toLowerCase().includes(s));
+if (d) f = f.filter(x => x.date === d);
+if (u) f = f.filter(x => x.unit === u);
+
+render(f);
+};
+
+window.update = async function(id) {
+
+const data = {
+rt_name: document.getElementById("rt_${id}").value,
+unit: document.getElementById("unit_${id}").value,
+shift: document.getElementById("shift_${id}").value,
+
+intubation: Number(document.getElementById(`int_${id}`).value),
+extubation: Number(document.getElementById(`ext_${id}`).value),
+reintubation: Number(document.getElementById(`reint_${id}`).value),
+ventilated_transports: Number(document.getElementById(`trans_${id}`).value),
+bronchoscopies_assisted: Number(document.getElementById(`bron_${id}`).value),
+tracheostomy_assisted: Number(document.getElementById(`trach_${id}`).value),
+
+et_tube_change: Number(document.getElementById(`et_${id}`).value),
+et_tube_change_reason: document.getElementById(`et_reason_${id}`).value,
+tt_tube_change: Number(document.getElementById(`tt_${id}`).value),
+tt_tube_change_reason: document.getElementById(`tt_reason_${id}`).value,
+
+code_participation: Number(document.getElementById(`code_${id}`).value),
+ventilator_initiation: Number(document.getElementById(`vent_${id}`).value),
+hfnc_initiation: Number(document.getElementById(`hfnc_${id}`).value),
+niv_initiation: Number(document.getElementById(`niv_${id}`).value),
+
+bronchial_hygiene: Number(document.getElementById(`bronch_${id}`).value),
+dta_culture: Number(document.getElementById(`dta_${id}`).value),
+prone: Number(document.getElementById(`prone_${id}`).value),
+supine: Number(document.getElementById(`supine_${id}`).value),
+
+total_intubated: Number(document.getElementById(`t_int_${id}`).value),
+total_trach_cases: Number(document.getElementById(`t_trach_${id}`).value),
+total_ecmo_cases: Number(document.getElementById(`t_ecmo_${id}`).value),
+
+notes: document.getElementById(`notes_${id}`).value
+
+};
+
+const { error } = await supabase
+.from("rt_logs")
+.update(data)
+.eq("id", id);
+
+if (error) alert(error.message);
+else {
+alert("Updated");
+loadData();
+}
+};
+
+loadData();
+</script>
+
+</body>
+</html>

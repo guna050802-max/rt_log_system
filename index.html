@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RT User Dashboard</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #0055a4, #007bff);
+    color: white;
+    text-align: center;
+}
+
+/* Header */
+.header {
+    padding: 30px 10px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* Container */
+.container {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    margin: 15px 0;
+    padding: 18px;
+    font-size: 18px;
+    border: none;
+    border-radius: 12px;
+    background: white;
+    color: #0055a4;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+/* Admin Button */
+.admin {
+    background: #ff4d4d;
+    color: white;
+}
+
+/* Footer */
+.footer {
+    margin-top: 40px;
+    font-size: 12px;
+    opacity: 0.8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    Department of Respiratory Therapy
+</div>
+
+<div class="container">
+
+    <button class="btn" onclick="goToRTLog()">
+        📝 RT LOG
+    </button>
+
+    <button class="btn" onclick="goToViewDashboard()">
+        📊 VIEW DASHBOARD
+    </button>
+
+    <button class="btn admin" onclick="adminAccess()">
+        🔐 ADMIN
+    </button>
+
+</div>
+
+<div class="footer">
+    Made By Gunalan.M.M
+</div>
+
+<script>
+
+// RT LOG PAGE
+function goToRTLog() {
+    window.location.href = "rtlog.html";
+}
+
+// USER VIEW DASHBOARD (NO PASSWORD)
+function goToViewDashboard() {
+    window.location.href = "view-dashboard.html";
+}
+
+// ADMIN LOGIN
+function adminAccess() {
+    let u = prompt("Enter Username:");
+    let p = prompt("Enter Password:");
+
+    if (u === "rtadmin" && p === "rt12345") {
+        window.location.href = "admin.html";
+    } else {
+        alert("Wrong credentials");
+    }
+}
+
+</script>
+
+</body>
+</html>
