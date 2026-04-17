@@ -139,9 +139,9 @@ render(f);
 window.update = async function(id) {
 
 const data = {
-rt_name: document.getElementById("rt_${id}").value,
-unit: document.getElementById("unit_${id}").value,
-shift: document.getElementById("shift_${id}").value,
+rt_name: document.getElementById(`rt_${id}`).value,
+unit: document.getElementById(`unit_${id}`).value,
+shift: document.getElementById(`shift_${id}`).value,
 
 intubation: Number(document.getElementById(`int_${id}`).value),
 extubation: Number(document.getElementById(`ext_${id}`).value),
