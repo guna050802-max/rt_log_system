@@ -172,17 +172,13 @@ total_ecmo_cases: Number(document.getElementById(`t_ecmo_${id}`).value),
 notes: document.getElementById(`notes_${id}`).value
 
 };
-
-const { error } = await supabase
-.from("rt_logs")
-.update(data)
-.eq("id", id);
-
-if (error) alert(error.message);
-else {
-alert("Updated");
-loadData();
+let allData = JSON.parse(localStorage.getItem("rtData")) || [];
+if (id >= 0 && id < allData.length) {
+    allData[id] = data;
 }
+localStorage.setItem("rtData", JSON.stringify(allData));
+alert("Updated Successfully");
+loadData();
 };
 
 loadData();
