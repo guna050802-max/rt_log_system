@@ -28,6 +28,7 @@ async function submitRTLog() {
     reintubation: Number(document.getElementById("reintubation").value || 0),
 
     ventilated_transports: Number(document.getElementById("transport_ventilated").value),
+    NIV_transports: Number(document.getElementById("transport_NIV").value),
     bronchoscopies_assisted: Number(document.getElementById("bronchoscopy_assisted").value),
     tracheostomy_assisted: Number(document.getElementById("tracheostomy_assisted").value),
 
@@ -76,6 +77,7 @@ const msg =
 "Extubation: " + entry.extubation + "\n" +
 "Reintubation: " + entry.reintubation + "\n" +
 "Ventilated Transport: " + entry.ventilated_transports + "\n" +
+"NIV Transport: " + entry.NIV_transports + "\n" +
 "Bronchoscopy Assisted: " + entry.bronchoscopies_assisted + "\n" +
 "Tracheostomy Assisted: " + entry.tracheostomy_assisted + "\n\n" +
 
